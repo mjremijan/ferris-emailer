@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.ferris</groupId>
+    <artifactId>ferris-emailer</artifactId>
+    <version>1.0.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>ferris-emailer</name>
+    <description>Show Premieres Over the next Two weeks</description>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>25</maven.compiler.release>
+        <exec.mainClass>org.ferris.spot.Main</exec.mainClass>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.17.2</version>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jlink-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>create-runtime-image</id>
+                        <goals>
+                            <goal>jlink</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <classifier>runtime</classifier>
+                    <addModules>
+                        <addModule>FerrisSpot</addModule>
+                    </addModules>
+
+                    <stripDebug>true</stripDebug>
+                    <noHeaderFiles>true</noHeaderFiles>
+                    <noManPages>true</noManPages>
+
+                    <compress>zip-6</compress>
+                    <launcher>FerrisSpot=FerrisSpot/org.ferris.spot.main.Main</launcher>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
+    <profiles>
+        <profile>
+            <id>for-windows</id>
+            <build>
+                <plugins> 
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copysettings</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy todir="${project.build.directory}/maven-jlink/classifiers/runtime/settings">
+                                            <fileset 
+                                               dir="${project.basedir}/src/assembly/settings"
+                                               includes="*"
+                                            />
+                                        </copy>
+                                    </target>
+                                </configuration>                                
+                            </execution>
+
+                            <execution>
+                                <id>unzip-jlink-zip</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <delete file="${project.build.directory}/ferris-spot-1.0.0.0-SNAPSHOT-runtime.zip"/>
+                                        <zip destfile="${project.build.directory}/ferris-spot-1.0.0.0-SNAPSHOT-runtime.zip"
+                                             basedir="${project.build.directory}/maven-jlink/classifiers/runtime"
+                                        />
+                                    </target>
+                                </configuration>                                
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
