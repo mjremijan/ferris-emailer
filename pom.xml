@@ -6,17 +6,22 @@
     <version>1.0.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>ferris-emailer</name>
-    <description>Show Premieres Over the next Two weeks</description>
+    <description>Sends emails for my projects</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>25</maven.compiler.release>
-        <exec.mainClass>org.ferris.spot.Main</exec.mainClass>
+        <exec.mainClass>org.ferris.emailer.main.Main</exec.mainClass>
+        <ferris.project.modulename>FerrisEmailer</ferris.project.modulename>
+        <ferris.project.assemblydir>${project.basedir}/src/assembly</ferris.project.assemblydir>
+        <ferris.jlink.outdir>${project.build.directory}/maven-jlink/classifiers/runtime</ferris.jlink.outdir>    
+        <ferris.jlink.outzip>${project.build.directory}/${project.artifactId}-${project.version}-runtime.zip</ferris.jlink.outzip>    
     </properties>
+    
     <dependencies>
         <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.17.2</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.5.25</version>
         </dependency>
     </dependencies>
     
@@ -37,15 +42,13 @@
                 <configuration>
                     <classifier>runtime</classifier>
                     <addModules>
-                        <addModule>FerrisSpot</addModule>
+                        <addModule>${ferris.project.modulename}</addModule>
                     </addModules>
-
                     <stripDebug>true</stripDebug>
                     <noHeaderFiles>true</noHeaderFiles>
                     <noManPages>true</noManPages>
-
                     <compress>zip-6</compress>
-                    <launcher>FerrisSpot=FerrisSpot/org.ferris.spot.main.Main</launcher>
+                    <launcher>${ferris.project.modulename}=${ferris.project.modulename}/${exec.mainClass}</launcher>
                 </configuration>
             </plugin>
         </plugins>
@@ -67,9 +70,9 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <copy todir="${project.build.directory}/maven-jlink/classifiers/runtime/settings">
+                                        <copy todir="${ferris.jlink.outdir}/settings">
                                             <fileset 
-                                               dir="${project.basedir}/src/assembly/settings"
+                                               dir="${ferris.project.assemblydir}/settings"
                                                includes="*"
                                             />
                                         </copy>
@@ -85,9 +88,9 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <delete file="${project.build.directory}/ferris-spot-1.0.0.0-SNAPSHOT-runtime.zip"/>
-                                        <zip destfile="${project.build.directory}/ferris-spot-1.0.0.0-SNAPSHOT-runtime.zip"
-                                             basedir="${project.build.directory}/maven-jlink/classifiers/runtime"
+                                        <delete file="${ferris.jlink.outzip}"/>
+                                        <zip destfile="${ferris.jlink.outzip}"
+                                             basedir="${ferris.jlink.outdir}"
                                         />
                                     </target>
                                 </configuration>                                
@@ -98,4 +101,5 @@
             </build>
         </profile>
     </profiles>
+
 </project>

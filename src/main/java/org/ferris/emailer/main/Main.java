@@ -1,16 +1,12 @@
 package org.ferris.emailer.main;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.ConsoleAppender;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -18,69 +14,42 @@ import org.jsoup.nodes.Element;
  */
 public class Main {
 
-    public static void main(String[] args) throws Exception {
-        System.out.println("Welcome to Ferris TV Premieres Calendar!");
-
-        HttpResponse<String> response = getHtml();
-
-        Document doc = Jsoup.parse(response.body());
-
-        // Select <section class="calendar"> (class match)
-        var section = doc.selectFirst("section.calendar");
-        
-        // Get dates 2 weeks into the future
-        var dates = getDatesTwoWeeksIntoTheFuture();
-        
-        System.out.printf("**************************************%n");
-        String key = null;
-        for (Element c : section.children()) {
-            if (c.tagName().equalsIgnoreCase("h6")) {
-                key = dates.containsKey(c.html()) ? c.html() : null;
-            }
-            else
-            if (c.tagName().equalsIgnoreCase("a") && key!=null) {
-                dates.replace(key, dates.get(key) + c.outerHtml());
-            }
-        }
-        
-        System.out.printf("////////////////////////////////////////////%n");
-        dates.entrySet().stream()
-        .forEach(e -> {
-            System.out.println(e.getKey() + " = " + e.getValue());
-        });
-         
-        Path javaHome = Path.of(System.getProperty("java.home")).toAbsolutePath();
-        System.out.println("java.home = " + javaHome);
-
-            
-
+    public static void main(String[] args)  {
+        new Main();
     }
     
-    private static LinkedHashMap<String,String> getDatesTwoWeeksIntoTheFuture() {
+    private Main() {
+        System.out.printf("Welcome to Ferris Emailer%n");
+        //Path javaHome = Path.of(System.getProperty("java.home")).toAbsolutePath();
+        //System.out.println("java.home = " + javaHome);
         
-        DateTimeFormatter f = DateTimeFormatter.ofPattern("EEEE, MMMM d");
+        LoggerContext context =
+            (LoggerContext) LoggerFactory.getILoggerFactory();
+
+        context.reset(); // clear any existing config
+
+        PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+        encoder.setContext(context);
+        encoder.setPattern("%d{HH:mm:ss} %-5level %logger{36} - %msg%n");
+        encoder.start();
+
+        ConsoleAppender<ILoggingEvent> appender =
+            new ConsoleAppender<>();
+        appender.setContext(context);
+        appender.setEncoder(encoder);
+        appender.setImmediateFlush(true);
+        appender.start();
+
+        Logger root = context.getLogger(Logger.ROOT_LOGGER_NAME);
+        root.setLevel(Level.DEBUG);
+        root.addAppender(appender);
         
-        var map = new LinkedHashMap<String, String>();
-        LocalDate now = LocalDate.now();
-        for (int i=0; i<14; i++) {
-            map.put(f.format(now.plusDays(i)), "");
-        }
-        System.out.printf("map %d%n", map.size());
-        return map;
+        org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass());
+        
+        for (int i=0; i<100; i++) {
+            log.info("INFO MESSAGE " + i);
+        }        
     }
-
-    private static HttpResponse<String> getHtml() throws Exception {
-        HttpClient client = HttpClient.newHttpClient();
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://www.tvinsider.com/shows/calendar/"))
-                .GET()
-                .build();
-
-        HttpResponse<String> response
-                = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        System.out.println(response.body());
-        return response;
-    }
+    
+    
 }
