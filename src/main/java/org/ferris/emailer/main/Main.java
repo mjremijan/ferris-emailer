@@ -2,6 +2,7 @@ package org.ferris.emailer.main;
 
 import org.ferris.emailer.application.ApplicationDirectory;
 import org.ferris.emailer.email.EmailServer;
+import org.ferris.emailer.settings.SettingsPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,22 +20,26 @@ public class Main {
         System.out.printf("Welcome to Ferris Emailer%n...see logs/application.log");
         setLogger();
         setApplicationDirectory();
-        setMessageSender();      
+        setSettingsPath();
+        setEmailServer();      
     }
     
-    private EmailServer messageSender;
-    private EmailServer getMessageSender() {
-        return messageSender;
+    private SettingsPath settingsPath;
+    private void setSettingsPath() {
+        settingsPath = new SettingsPath(getApplicationDirectory().toString());
     }
-    private void setMessageSender() {
-        messageSender = new EmailServer(
-            LoggerFactory.getLogger(EmailServer.class)
-            , "host"
-            , 8080
-            , "username"
-            , "password"
-            , "fromAddress"
-            , "fromName"
+    private SettingsPath getSettingsPath() {
+        return settingsPath;
+    }
+    
+    private EmailServer emailServer;
+    private EmailServer getEmailServer() {
+        return emailServer;
+    }
+    private void setEmailServer() {
+        emailServer = new EmailServer(
+              LoggerFactory.getLogger(EmailServer.class)
+            , getSettingsPath().toString()
         );
         log.info("Created MessageSender");
     }

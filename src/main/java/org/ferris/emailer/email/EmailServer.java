@@ -10,7 +10,12 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 import org.slf4j.Logger;
 
@@ -26,31 +31,107 @@ public class EmailServer {
     protected Authenticator authenticator;
     protected InternetAddress from;
     
-    public EmailServer(Logger log, String host, int port, String username, String password, String fromAddress, String fromName) {
+    public EmailServer(Logger log, String settingsPath) {
+        setLog(log);
+        setProperties(settingsPath);
+        setAuthenticator();
+        setFromAddress();
+    }
+    
+    private void setLog(Logger log) {
         this.log = log;
+    }
+    
+    private void setProperties(String settingsPath) {
+        
+        Path settingsFile = Path.of(settingsPath, "email.properties");
+        if (!Files.exists(settingsFile)) {
+            throw new RuntimeException(
+                String.format("Settings file does not exist: \"%s\"", settingsFile.toString())
+            );
+        }
+        if (!Files.isRegularFile(settingsFile)) {
+            throw new RuntimeException(
+                String.format("Settings file path is not to a file: \"%s\"", settingsFile.toString())
+            );
+        }
         
         this.props = new Properties();
         {
+            try (InputStream is = new FileInputStream(settingsFile.toFile());) {
+                props.load(is);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        // auth
+        props.setProperty("mail.smtp.auth", "true");
+        
+        // tls
+        props.setProperty("mail.smtp.starttls.enable", "true");
+        
+        // host
+        String host = props.getProperty("host", "").trim();
+        {
+            if (host.isEmpty()) {
+                throw new RuntimeException("EmailServer property \"host\" is empty");
+            }
             props.setProperty("mail.smtp.host", host);
-            props.setProperty("mail.smtp.port", String.valueOf(port));
-            props.setProperty("mail.smtp.auth", "true");                       
-            props.setProperty("mail.smtp.starttls.enable", "true");
         }
         
-        this.authenticator = new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
+        // port
+        String port = props.getProperty("port", "").trim();
+        {
+            if (port.isEmpty()) {
+                throw new RuntimeException("EmailServer property \"port\" is empty");
             }
-        };
-        
+            try {
+                Integer.parseInt(port);
+            } catch (NumberFormatException e) {
+                throw new RuntimeException("EmailServer property \"port\" is not an integer");
+            }
+            props.setProperty("mail.smtp.port", port);
+        }
+    }
+
+    private void setAuthenticator() {
+        authenticator = null;
+        {
+            String username = props.getProperty("username", "").trim();
+            if (username.isEmpty()) {
+                throw new RuntimeException("EmailServer property \"username\" is empty");
+            }
+            String password = props.getProperty("password", "").trim();
+            if (password.isEmpty()) {
+                throw new RuntimeException("EmailServer property \"password\" is empty");
+            }
+            authenticator = new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(username, password);
+                }
+            };
+        }
+    }
+    
+    private void setFromAddress() {
         from = new InternetAddress();
         {
+            String fromAddress = props.getProperty("fromAddress", "").trim();
+            if (fromAddress.isEmpty()) {
+                throw new RuntimeException("EmailServer property \"fromAddress\" is empty");
+            }
+            String fromName = props.getProperty("fromName", "").trim();
+            if (fromName.isEmpty()) {
+                throw new RuntimeException("EmailServer property \"fromName\" is empty");
+            }
+            
             from.setAddress(fromAddress);
             try { from.setPersonal(fromName); } catch (UnsupportedEncodingException e) { throw new RuntimeException(e);}
         }
     }
-
+    
     public void send(EmailMessage message)
     {
         log.info(String.format("ENTER %s", message));
