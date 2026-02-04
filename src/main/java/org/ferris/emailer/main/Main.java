@@ -1,11 +1,8 @@
 package org.ferris.emailer.main;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.ConsoleAppender;
+import org.ferris.emailer.application.ApplicationDirectory;
+import org.ferris.emailer.mail.MessageSender;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -15,41 +12,46 @@ import org.slf4j.LoggerFactory;
 public class Main {
 
     public static void main(String[] args)  {
-        new Main();
+        new Main().run();
     }
     
-    private Main() {
-        System.out.printf("Welcome to Ferris Emailer%n");
-        //Path javaHome = Path.of(System.getProperty("java.home")).toAbsolutePath();
-        //System.out.println("java.home = " + javaHome);
-        
-        LoggerContext context =
-            (LoggerContext) LoggerFactory.getILoggerFactory();
-
-        context.reset(); // clear any existing config
-
-        PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-        encoder.setContext(context);
-        encoder.setPattern("%d{HH:mm:ss} %-5level %logger{36} - %msg%n");
-        encoder.start();
-
-        ConsoleAppender<ILoggingEvent> appender =
-            new ConsoleAppender<>();
-        appender.setContext(context);
-        appender.setEncoder(encoder);
-        appender.setImmediateFlush(true);
-        appender.start();
-
-        Logger root = context.getLogger(Logger.ROOT_LOGGER_NAME);
-        root.setLevel(Level.DEBUG);
-        root.addAppender(appender);
-        
-        org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass());
-        
-        for (int i=0; i<100; i++) {
-            log.info("INFO MESSAGE " + i);
-        }        
+    private void run() {
+        System.out.printf("Welcome to Ferris Emailer%n...see logs/application.log");
+        setLogger();
+        setApplicationDirectory();
+        setMessageSender();      
+    }
+    
+    private MessageSender messageSender;
+    private MessageSender getMessageSender() {
+        return messageSender;
+    }
+    private void setMessageSender() {
+        messageSender = new MessageSender(
+            LoggerFactory.getLogger(MessageSender.class)
+        );
+        log.info("Created MessageSender");
     }
     
     
+    private ApplicationDirectory applicationDirectory;
+    private ApplicationDirectory getApplicationDirectory() {
+        return applicationDirectory;
+    }
+    private void setApplicationDirectory() {
+        // This method assumes the application is executing
+        // within a runtime created by jlink. If this is
+        // the case, then the 'java.home' property is the 
+        // root directory of directory structure created by jlink.
+        applicationDirectory = new ApplicationDirectory(
+            System.getProperty("java.home")
+        );
+        log.info("Created ApplicationDirectory");
+    }
+    
+    private Logger log;
+    private void setLogger() {
+        log = LoggerFactory.getLogger(Main.class);
+        log.info("Created Main Logger");
+    }
 }

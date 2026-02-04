@@ -1,13 +1,21 @@
 package org.ferris.emailer.mail;
 
+import org.slf4j.Logger;
+
 
 /**
  *
  * @author Michael Remijan mjremijan@yahoo.com @mjremijan
  */
 public class MessageSender {
+        
+    protected Logger log;
+    
+    public MessageSender(Logger log) {
+        this.log = log;
+    }
 
-//    protected Logger log;
+    
 
 //    protected EmailAccountService emailAccountService;
 

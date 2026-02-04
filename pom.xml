@@ -12,7 +12,7 @@
         <maven.compiler.release>25</maven.compiler.release>
         <exec.mainClass>org.ferris.emailer.main.Main</exec.mainClass>
         <ferris.project.modulename>FerrisEmailer</ferris.project.modulename>
-        <ferris.project.assemblydir>${project.basedir}/src/assembly</ferris.project.assemblydir>
+        <ferris.project.assemblydir>${project.basedir}/src/main/assembly</ferris.project.assemblydir>
         <ferris.jlink.outdir>${project.build.directory}/maven-jlink/classifiers/runtime</ferris.jlink.outdir>    
         <ferris.jlink.outzip>${project.build.directory}/${project.artifactId}-${project.version}-runtime.zip</ferris.jlink.outzip>    
     </properties>
@@ -73,6 +73,12 @@
                                         <copy todir="${ferris.jlink.outdir}/settings">
                                             <fileset 
                                                dir="${ferris.project.assemblydir}/settings"
+                                               includes="*"
+                                            />
+                                        </copy>
+                                        <copy todir="${ferris.jlink.outdir}/logs">
+                                            <fileset 
+                                               dir="${ferris.project.assemblydir}/logs"
                                                includes="*"
                                             />
                                         </copy>
