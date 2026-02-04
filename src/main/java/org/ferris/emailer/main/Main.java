@@ -1,7 +1,7 @@
 package org.ferris.emailer.main;
 
 import org.ferris.emailer.application.ApplicationDirectory;
-import org.ferris.emailer.mail.MessageSender;
+import org.ferris.emailer.email.EmailServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,13 +22,13 @@ public class Main {
         setMessageSender();      
     }
     
-    private MessageSender messageSender;
-    private MessageSender getMessageSender() {
+    private EmailServer messageSender;
+    private EmailServer getMessageSender() {
         return messageSender;
     }
     private void setMessageSender() {
-        messageSender = new MessageSender(
-            LoggerFactory.getLogger(MessageSender.class)
+        messageSender = new EmailServer(
+            LoggerFactory.getLogger(EmailServer.class)
         );
         log.info("Created MessageSender");
     }

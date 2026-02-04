@@ -1,4 +1,4 @@
-package org.ferris.emailer.mail;
+package org.ferris.emailer.email;
 
 import org.slf4j.Logger;
 
@@ -7,33 +7,21 @@ import org.slf4j.Logger;
  *
  * @author Michael Remijan mjremijan@yahoo.com @mjremijan
  */
-public class MessageSender {
+public class EmailServer {
         
     protected Logger log;
     
-    public MessageSender(Logger log) {
+    public EmailServer(Logger log) {
         this.log = log;
     }
 
-    
-
-//    protected EmailAccountService emailAccountService;
-
-
-//    @ExceptionRetry
-    public void send(Message message)
+    public void send(EmailMessage message)
     {
-//        log.info(String.format("ENTER %s", draft));
+        log.info(String.format("ENTER %s", message));
 
-//        EmailAccount emailAccount = emailAccountService.getEmailAccount();
-//        if (!emailAccount.isSendingEnabled()) {
-//            log.info(String.format("Sending email is DISABLED! Email not sent!"));
-//            return;
-//        }
-//        
-//        try {
-//            // Create MimeMultipart
-//            MimeMultipart content = new MimeMultipart("related");
+        try {
+            // Create MimeMultipart
+            MimeMultipart content = new MimeMultipart("related");
 //
 //            // html part
 //            {
@@ -100,8 +88,8 @@ public class MessageSender {
 //
 //            log.info(String.format("Attempt email with %s", emailAccount.toString()));
 //            Transport.send(m);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

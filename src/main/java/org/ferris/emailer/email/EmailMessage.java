@@ -1,4 +1,4 @@
-package org.ferris.emailer.mail;
+package org.ferris.emailer.email;
 
 import java.util.StringJoiner;
 
@@ -6,14 +6,14 @@ import java.util.StringJoiner;
  *
  * @author Michael Remijan mjremijan@yahoo.com @mjremijan
  */
-public class Message {
+public class EmailMessage {
 
     protected String subject;
     protected String body;
 
     @Override
     public String toString() {
-        StringJoiner sj = new StringJoiner(", ", "[EmailDraft ", "]");
+        StringJoiner sj = new StringJoiner(", ", "[EmailMessage ", "]");
         sj.add(String.format("subject:%s", (subject == null) ? "null" : subject));
         sj.add(String.format("body_length:%s", (body == null) ? "null" : body.length()));
         if ("t".equals(System.getProperty("resiste_log_body", "f"))) {
@@ -22,7 +22,7 @@ public class Message {
         return sj.toString();
     }
 
-    public Message(String subject, String body) {
+    public EmailMessage(String subject, String body) {
         this.subject = subject;
         this.body = body;
     }
