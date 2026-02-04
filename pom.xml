@@ -27,6 +27,16 @@
             <version>1.5.25</version>
         </dependency>
         
+        
+        <!-- 
+         | MAIL 
+        -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+
     </dependencies>
     
     <build>

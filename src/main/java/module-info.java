@@ -6,4 +6,5 @@ module FerrisEmailer {
     requires java.naming;
     requires ch.qos.logback.classic;
     requires ch.qos.logback.core;
+    requires jakarta.mail;
 }

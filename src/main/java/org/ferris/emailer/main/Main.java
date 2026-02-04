@@ -29,6 +29,12 @@ public class Main {
     private void setMessageSender() {
         messageSender = new EmailServer(
             LoggerFactory.getLogger(EmailServer.class)
+            , "host"
+            , 8080
+            , "username"
+            , "password"
+            , "fromAddress"
+            , "fromName"
         );
         log.info("Created MessageSender");
     }
