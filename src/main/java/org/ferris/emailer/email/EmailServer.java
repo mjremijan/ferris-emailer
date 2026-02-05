@@ -78,6 +78,7 @@ public class EmailServer {
                 throw new RuntimeException("EmailServer property \"host\" is empty");
             }
             props.setProperty("mail.smtp.host", host);
+            log.info(String.format("host: \"%s\"", host));
         }
         
         // port
@@ -87,11 +88,12 @@ public class EmailServer {
                 throw new RuntimeException("EmailServer property \"port\" is empty");
             }
             try {
-                Integer.parseInt(port);
+                Integer.valueOf(port);
             } catch (NumberFormatException e) {
                 throw new RuntimeException("EmailServer property \"port\" is not an integer");
             }
             props.setProperty("mail.smtp.port", port);
+            log.info(String.format("port: \"%s\"", port));
         }
     }
 
@@ -99,12 +101,18 @@ public class EmailServer {
         authenticator = null;
         {
             String username = props.getProperty("username", "").trim();
-            if (username.isEmpty()) {
-                throw new RuntimeException("EmailServer property \"username\" is empty");
+            {
+                if (username.isEmpty()) {
+                    throw new RuntimeException("EmailServer property \"username\" is empty");
+                }
+                log.info(String.format("username: \"%s\"", username));
             }
             String password = props.getProperty("password", "").trim();
-            if (password.isEmpty()) {
-                throw new RuntimeException("EmailServer property \"password\" is empty");
+            {
+                if (password.isEmpty()) {
+                    throw new RuntimeException("EmailServer property \"password\" is empty");
+                }
+                log.info(String.format("password length: \"%d\"", password.length()));
             }
             authenticator = new Authenticator() {
                 @Override
@@ -119,12 +127,18 @@ public class EmailServer {
         from = new InternetAddress();
         {
             String fromAddress = props.getProperty("fromAddress", "").trim();
-            if (fromAddress.isEmpty()) {
-                throw new RuntimeException("EmailServer property \"fromAddress\" is empty");
+            {
+                if (fromAddress.isEmpty()) {
+                    throw new RuntimeException("EmailServer property \"fromAddress\" is empty");
+                }
+                log.info(String.format("fromAddress: \"%s\"", fromAddress));
             }
             String fromName = props.getProperty("fromName", "").trim();
-            if (fromName.isEmpty()) {
-                throw new RuntimeException("EmailServer property \"fromName\" is empty");
+            {
+                if (fromName.isEmpty()) {
+                    throw new RuntimeException("EmailServer property \"fromName\" is empty");
+                }
+                log.info(String.format("fromName: \"%s\"", fromName));
             }
             
             from.setAddress(fromAddress);

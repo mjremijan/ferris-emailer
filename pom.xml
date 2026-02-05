@@ -12,9 +12,9 @@
         <maven.compiler.release>25</maven.compiler.release>
         <exec.mainClass>org.ferris.emailer.main.Main</exec.mainClass>
         <ferris.project.modulename>FerrisEmailer</ferris.project.modulename>
-        <ferris.project.assemblydir>${project.basedir}/src/main/assembly</ferris.project.assemblydir>
-        <ferris.jlink.outdir>${project.build.directory}/maven-jlink/classifiers/runtime</ferris.jlink.outdir>    
-        <ferris.jlink.outzip>${project.build.directory}/${project.artifactId}-${project.version}-runtime.zip</ferris.jlink.outzip>    
+        <ferris.project.assemblydir>${project.basedir}\src\main\assembly</ferris.project.assemblydir>
+        <ferris.jlink.outdir>${project.build.directory}\maven-jlink\classifiers\runtime</ferris.jlink.outdir>    
+        <ferris.jlink.outzip>${project.build.directory}\${project.artifactId}-${project.version}-runtime.zip</ferris.jlink.outzip>    
     </properties>
     
     <dependencies>
@@ -77,7 +77,7 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>copysettings</id>
+                                <id>copy-settings_logs-to-jlink</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>run</goal>
@@ -101,7 +101,7 @@
                             </execution>
 
                             <execution>
-                                <id>unzip-jlink-zip</id>
+                                <id>delete-then-zip-jlink</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>run</goal>
@@ -112,6 +112,52 @@
                                         <zip destfile="${ferris.jlink.outzip}"
                                              basedir="${ferris.jlink.outdir}"
                                         />
+                                    </target>
+                                </configuration>                                
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>localhost-run</id>
+            <build>
+                <plugins> 
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-confidential-settings-to-jlink</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy todir="${ferris.jlink.outdir}/settings">
+                                            <fileset 
+                                               dir="D:/Documents/Development/Resources/ferris-emailer/settings"
+                                               includes="*"
+                                            />
+                                        </copy>
+                                    </target>
+                                </configuration>                                
+                            </execution>
+                            <execution>
+                                <id>localhost-run-jlink</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <exec executable="cmd"
+                                              dir="${ferris.jlink.outdir}\bin"
+                                              failonerror="true">
+                                            <arg value="/c"/>
+                                            <arg value="FerrisEmailer.bat"/>
+                                        </exec>
                                     </target>
                                 </configuration>                                
                             </execution>
