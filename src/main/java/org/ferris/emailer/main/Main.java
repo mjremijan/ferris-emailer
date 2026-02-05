@@ -41,7 +41,7 @@ public class Main {
               LoggerFactory.getLogger(EmailServer.class)
             , getSettingsPath().toString()
         );
-        log.info("Created MessageSender");
+        log.info("Created EmailServer");
     }
     
     

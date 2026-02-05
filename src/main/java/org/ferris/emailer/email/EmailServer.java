@@ -44,7 +44,7 @@ public class EmailServer {
     
     private void setProperties(String settingsPath) {
         
-        Path settingsFile = Path.of(settingsPath, "email.properties");
+        Path settingsFile = Path.of(settingsPath, "emailer.properties");
         if (!Files.exists(settingsFile)) {
             throw new RuntimeException(
                 String.format("Settings file does not exist: \"%s\"", settingsFile.toString())

@@ -153,10 +153,9 @@
                                 <configuration>
                                     <target>
                                         <exec executable="cmd"
-                                              dir="${ferris.jlink.outdir}\bin"
+                                              dir="${ferris.jlink.outdir}\bin\"
                                               failonerror="true">
-                                            <arg value="/c"/>
-                                            <arg value="FerrisEmailer.bat"/>
+                                            <arg line="/c FerrisEmailer.bat"/>
                                         </exec>
                                     </target>
                                 </configuration>                                

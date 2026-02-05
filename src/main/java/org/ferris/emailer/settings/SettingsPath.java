@@ -14,7 +14,7 @@ public class SettingsPath {
     public SettingsPath(String applicationDirectory) {
         path = Path.of(applicationDirectory, "settings");
         
-        if (Files.exists(path)) {
+        if (!Files.exists(path)) {
             throw new RuntimeException(
                 String.format("Settings path does not exist: \"%s\"", path.toString())
             );
@@ -24,5 +24,10 @@ public class SettingsPath {
                 String.format("Settings path is not a directory: \"%s\"", path.toString())
             );
         }
+    }
+    
+    @Override
+    public String toString() {
+        return path.toString();
     }
 }
