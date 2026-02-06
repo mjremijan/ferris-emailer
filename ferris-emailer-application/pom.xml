@@ -8,14 +8,11 @@
     </parent>
     <artifactId>ferris-emailer-application</artifactId>
     <packaging>jar</packaging>
-    <name>ferris-emailer-application</name>
     <description>
         Sends emails for my projects
     </description>
     
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>25</maven.compiler.release>
         <exec.mainClass>org.ferris.emailer.main.Main</exec.mainClass>
         <ferris.project.modulename>FerrisEmailer</ferris.project.modulename>
         <ferris.project.assemblydir>${project.basedir}\src\main\assembly</ferris.project.assemblydir>
