@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.ferris</groupId>
+        <artifactId>ferris-emailer</artifactId>
+        <version>1.0.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>ferris-emailer-application</artifactId>
+    <packaging>jar</packaging>
+    <name>ferris-emailer-application</name>
+    <description>
+        Sends emails for my projects
+    </description>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>25</maven.compiler.release>
+        <exec.mainClass>org.ferris.emailer.main.Main</exec.mainClass>
+        <ferris.project.modulename>FerrisEmailer</ferris.project.modulename>
+        <ferris.project.assemblydir>${project.basedir}\src\main\assembly</ferris.project.assemblydir>
+        <ferris.jlink.outdir>${project.build.directory}\maven-jlink\classifiers\runtime</ferris.jlink.outdir>    
+        <ferris.jlink.outzip>${project.build.directory}\${project.artifactId}-${project.version}-runtime.zip</ferris.jlink.outzip>    
+    </properties>
+    
+    <dependencies>
+        <!--
+            LOGGING
+        -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.5.25</version>
+        </dependency>
+        
+        
+        <!-- 
+         | MAIL 
+        -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>2.0.2</version>
+        </dependency>
+
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jlink-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>create-runtime-image</id>
+                        <goals>
+                            <goal>jlink</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <classifier>runtime</classifier>
+                    <addModules>
+                        <addModule>${ferris.project.modulename}</addModule>
+                    </addModules>
+                    <stripDebug>true</stripDebug>
+                    <noHeaderFiles>true</noHeaderFiles>
+                    <noManPages>true</noManPages>
+                    <compress>zip-6</compress>
+                    <launcher>${ferris.project.modulename}=${ferris.project.modulename}/${exec.mainClass}</launcher>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
+    <profiles>
+        <profile>
+            <id>for-windows</id>
+            <build>
+                <plugins> 
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-settings_logs-to-jlink</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy todir="${ferris.jlink.outdir}/settings">
+                                            <fileset 
+                                               dir="${ferris.project.assemblydir}/settings"
+                                               includes="*"
+                                            />
+                                        </copy>
+                                        <copy todir="${ferris.jlink.outdir}/logs">
+                                            <fileset 
+                                               dir="${ferris.project.assemblydir}/logs"
+                                               includes="*"
+                                            />
+                                        </copy>
+                                    </target>
+                                </configuration>                                
+                            </execution>
+
+                            <execution>
+                                <id>delete-then-zip-jlink</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <delete file="${ferris.jlink.outzip}"/>
+                                        <zip destfile="${ferris.jlink.outzip}"
+                                             basedir="${ferris.jlink.outdir}"
+                                        />
+                                    </target>
+                                </configuration>                                
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>localhost-run</id>
+            <build>
+                <plugins> 
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-confidential-settings-to-jlink</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy todir="${ferris.jlink.outdir}/settings">
+                                            <fileset 
+                                               dir="D:/Documents/Development/Resources/ferris-emailer/settings"
+                                               includes="*"
+                                            />
+                                        </copy>
+                                    </target>
+                                </configuration>                                
+                            </execution>
+                            <execution>
+                                <id>localhost-run-jlink</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <exec executable="cmd"
+                                              dir="${ferris.jlink.outdir}\bin\"
+                                              failonerror="true">
+                                            <arg line="/c FerrisEmailer.bat"/>
+                                        </exec>
+                                    </target>
+                                </configuration>                                
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
