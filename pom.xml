@@ -5,7 +5,6 @@
     <artifactId>ferris-emailer</artifactId>
     <version>1.0.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>ferris-emailer</name>
     <description>
         Sends emails for my projects
     </description>
@@ -22,5 +21,4 @@
         <module>ferris-emailer-application</module>
         <module>ferris-emailer-domain</module>
     </modules>
-
 </project>

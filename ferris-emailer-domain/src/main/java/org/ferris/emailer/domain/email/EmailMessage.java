@@ -1,4 +1,4 @@
-package org.ferris.emailer.email;
+package org.ferris.emailer.domain.email;
 
 import java.util.StringJoiner;
 

@@ -1,5 +1,6 @@
 package org.ferris.emailer.email;
 
+import org.ferris.emailer.domain.email.EmailMessage;
 import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
